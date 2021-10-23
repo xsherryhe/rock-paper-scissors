@@ -1,6 +1,9 @@
-//Return selection of 'rock', 'paper', or 'scissors' at random as computer
+//Define possible selections for game
+const RPS_CHOICES = ['Rock', 'Paper', 'Scissors'];
+
+//Return selection at random as computer
 function computerPlay() {
-    return ['Rock', 'Paper', 'Scissors'][Math.floor(Math.random() * 3)];
+    return RPS_CHOICES[Math.floor(Math.random() * 3)];
 }
 
 //Return results of a round of Rock Paper Scissors with computer
@@ -9,18 +12,16 @@ function playRound(playerSelection, computerSelection) {
     const WINS_OVER = {'Rock': 'Paper',
                       'Paper': 'Scissors',
                       'Scissors': 'Rock'};
-    
-    //Convert player's selection to correct casing
-    playerSelection = playerSelection[0].toUpperCase() + playerSelection.substring(1).toLowerCase();
 
-    //Determine result and winning/losing selections based on win conditions
-    let winOrLose = playerSelection == WINS_OVER[computerSelection] ? 'Win' : 'Lose',
-        winningSelection = winOrLose == 'Win' ? playerSelection : computerSelection,
-        losingSelection = winOrLose == 'Win' ? computerSelection : playerSelection;
+    //Return result and winning/losing selections based on win conditions
+    return playerSelection == computerSelection ? 'Tie'
+         : playerSelection == WINS_OVER[computerSelection] ? 'Win' 
+         : 'Lose';
+}
 
-    //Return string with result and winning/losing selections
-    return playerSelection == computerSelection ? 'It\'s a tie! Rematch...'
-         : `You ${winOrLose}! ${winningSelection} beats ${losingSelection}`;
+//Convert player selection to correct casing
+function convertCasing(playerSelection) {
+    return playerSelection[0].toUpperCase() + playerSelection.substring(1).toLowerCase();
 }
 
 //Return results of a 5-round game of Rock Paper Scissors with computer
@@ -30,31 +31,39 @@ function game() {
 
     //Play 5 rounds
     for(let i = 0; i < 5; i++) {
-        //Obtain player selection from the user
-        let playerSelection = prompt('Please type your selection: Rock, Paper, or Scissors.');
+        //Obtain player selection from the user with correct casing
+        let playerSelection = convertCasing(prompt('Please type your selection: Rock, Paper, or Scissors.'));
         //Exit the game if the user cancels the game during player selection
         if(playerSelection == null) {
             console.log('You canceled the game.'); 
             return;
         }
         //While the user has input an invalid selection, continue prompting until a valid selection is input
-        while(!['rock', 'paper', 'scissors'].includes(playerSelection.toLowerCase()))
-            playerSelection = prompt('Please enter a valid selection: Rock, Paper, or Scissors.');
+        while(!RPS_CHOICES.includes(playerSelection))
+            playerSelection = convertCasing(prompt('Please enter a valid selection: Rock, Paper, or Scissors.'));
 
-        //Obtain computer selection from computerPlay function and initiate the round
+        //Obtain computer selection from computerPlay function, initiate the round, and store the round number
         let computerSelection = computerPlay(),
-            roundResult = playRound(playerSelection, computerSelection);
+            roundResult = playRound(playerSelection, computerSelection),
+            roundNumber = `Round ${i + 1}: `;
 
-        //Log the result of the round
-        console.log(`Round ${i + 1}: ` + roundResult);
-        
-        //If the result was a tie, rematch the round by decrementing the round number
-        if(roundResult.indexOf('tie') > 0) i--;
-        //Otherwise, record the result of the round to the scoreboard as true if player won, false if player lost
-        else scoreboard.push(roundResult.indexOf('Win') > 0);
+        //If the result was a tie, log the tie and rematch the round by decrementing the round number
+        if(roundResult == 'Tie') {
+            console.log(roundNumber + 'It\'s a tie! Rematch...');
+            i--;
+        }
+        //Otherwise, log the result and record it to the scoreboard
+        else {
+            //Determine the winning and losing selections for the logged result
+            let winningSelection = roundResult == 'Win' ? playerSelection : computerSelection,
+                losingSelection = roundResult == 'Win' ? computerSelection : playerSelection;
+
+            console.log(roundNumber + `You ${roundResult}! ${winningSelection} beats ${losingSelection}.`);
+            scoreboard.push(roundResult);
+        }
     }
 
-    //Log the winner of the entire game, based on the number of trues on the scoreboard
-    console.log(scoreboard.filter(roundResult => roundResult).length > 2 ?
+    //Log the winner of the entire game, based on the number of wins on the scoreboard
+    console.log(scoreboard.filter(roundResult => roundResult == 'Win').length > 2 ?
                 'Congratulations! You Won!' : 'Sorry, You Lost.');
 }
