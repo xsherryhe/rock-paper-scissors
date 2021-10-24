@@ -1,8 +1,24 @@
 //Define possible selections for game
 const RPS_CHOICES = ['Rock', 'Paper', 'Scissors'];
 
-//Return selection at random as computer
-function computerPlay() {
+//Obtain player selection from user
+function getPlayerSelection() {
+    let playerSelection = convertCasing(prompt('Please type your selection: Rock, Paper, or Scissors.'));
+    //While the user has input an invalid selection, continue prompting until a valid selection is input
+    while (!(RPS_CHOICES.includes(playerSelection) || playerSelection == null))
+        playerSelection = convertCasing(prompt('Please enter a valid selection: Rock, Paper, or Scissors.'));
+    return playerSelection;
+}
+
+//Convert player selection to correct casing (if it's truthy)
+function convertCasing(playerSelection) {
+    return playerSelection ? 
+                playerSelection[0].toUpperCase() + playerSelection.substring(1).toLowerCase()
+              : playerSelection;
+}
+
+//Return random computer selection
+function getComputerSelection() {
     return RPS_CHOICES[Math.floor(Math.random() * 3)];
 }
 
@@ -19,32 +35,24 @@ function playRound(playerSelection, computerSelection) {
          : 'Lose';
 }
 
-//Convert player selection to correct casing
-function convertCasing(playerSelection) {
-    return playerSelection[0].toUpperCase() + playerSelection.substring(1).toLowerCase();
-}
-
 //Return results of a 5-round game of Rock Paper Scissors with computer
-function game() {
+function playGame() {
     //Create a scoreboard to keep score
     let scoreboard = [];
 
     //Play 5 rounds
     for(let i = 0; i < 5; i++) {
-        //Obtain player selection from the user with correct casing
-        let playerSelection = convertCasing(prompt('Please type your selection: Rock, Paper, or Scissors.'));
+        //Obtain player and computer selections
+        let playerSelection = getPlayerSelection(),
+            computerSelection = getComputerSelection();
         //Exit the game if the user cancels the game during player selection
-        if(playerSelection == null) {
-            console.log('You canceled the game.'); 
+        if (playerSelection == null) {
+            console.log('You canceled the game.');
             return;
         }
-        //While the user has input an invalid selection, continue prompting until a valid selection is input
-        while(!RPS_CHOICES.includes(playerSelection))
-            playerSelection = convertCasing(prompt('Please enter a valid selection: Rock, Paper, or Scissors.'));
 
-        //Obtain computer selection from computerPlay function, initiate the round, and store the round number
-        let computerSelection = computerPlay(),
-            roundResult = playRound(playerSelection, computerSelection),
+        //Initiate the round and store the round number
+        let roundResult = playRound(playerSelection, computerSelection),
             roundNumber = `Round ${i + 1}: `;
 
         //If the result was a tie, log the tie and rematch the round by decrementing the round number
@@ -54,7 +62,7 @@ function game() {
         }
         //Otherwise, log the result and record it to the scoreboard
         else {
-            //Determine the winning and losing selections for the logged result
+            //Determine the winning and losing selections to log
             let winningSelection = roundResult == 'Win' ? playerSelection : computerSelection,
                 losingSelection = roundResult == 'Win' ? computerSelection : playerSelection;
 
