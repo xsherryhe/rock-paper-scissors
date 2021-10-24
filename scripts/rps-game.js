@@ -1,4 +1,3 @@
-//Define possible selections for game
 const RPS_CHOICES = ['Rock', 'Paper', 'Scissors'];
 
 //Obtain player selection from user
@@ -24,12 +23,10 @@ function getComputerSelection() {
 
 //Return results of a round of Rock Paper Scissors with computer
 function playRound(playerSelection, computerSelection) {
-    //Define win conditions
     const WINS_OVER = {'Rock': 'Paper',
                       'Paper': 'Scissors',
                       'Scissors': 'Rock'};
 
-    //Return result and winning/losing selections based on win conditions
     return playerSelection == computerSelection ? 'Tie'
          : playerSelection == WINS_OVER[computerSelection] ? 'Win' 
          : 'Lose';
@@ -37,12 +34,9 @@ function playRound(playerSelection, computerSelection) {
 
 //Return results of a 5-round game of Rock Paper Scissors with computer
 function playGame() {
-    //Create a scoreboard to keep score
     let scoreboard = [];
 
-    //Play 5 rounds
     for(let i = 0; i < 5; i++) {
-        //Obtain player and computer selections
         let playerSelection = getPlayerSelection(),
             computerSelection = getComputerSelection();
         //Exit the game if the user cancels the game during player selection
@@ -51,7 +45,6 @@ function playGame() {
             return;
         }
 
-        //Initiate the round and store the round number
         let roundResult = playRound(playerSelection, computerSelection),
             roundNumber = `Round ${i + 1}: `;
 
@@ -62,7 +55,6 @@ function playGame() {
         }
         //Otherwise, log the result and record it to the scoreboard
         else {
-            //Determine the winning and losing selections to log
             let winningSelection = roundResult == 'Win' ? playerSelection : computerSelection,
                 losingSelection = roundResult == 'Win' ? computerSelection : playerSelection;
 
@@ -71,7 +63,7 @@ function playGame() {
         }
     }
 
-    //Log the winner of the entire game, based on the number of wins on the scoreboard
+    //Log the winner of the entire game
     console.log(scoreboard.filter(roundResult => roundResult == 'Win').length > 2 ?
                 'Congratulations! You Won!' : 'Sorry, You Lost.');
 }
