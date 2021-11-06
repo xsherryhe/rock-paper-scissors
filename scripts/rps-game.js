@@ -1,69 +1,81 @@
-const RPS_CHOICES = ['Rock', 'Paper', 'Scissors'];
-
-//Obtain player selection from user
-function getPlayerSelection() {
-    let playerSelection = convertCasing(prompt('Please type your selection: Rock, Paper, or Scissors.'));
-    //While the user has input an invalid selection, continue prompting until a valid selection is input
-    while (!(RPS_CHOICES.includes(playerSelection) || playerSelection == null))
-        playerSelection = convertCasing(prompt('Please enter a valid selection: Rock, Paper, or Scissors.'));
-    return playerSelection;
+//Initialize the Rock Paper Scissors game
+function playGame() {
+    const rpsButtons = document.querySelectorAll('.player-selection');
+    rpsButtons.forEach(button => button.addEventListener('click', displayButtonResult));
+    playGame.roundNumber = 0;
+    playGame.scoreboard = [];
 }
 
-//Convert player selection to correct casing (if it's truthy)
-function convertCasing(playerSelection) {
-    return playerSelection ? 
-                playerSelection[0].toUpperCase() + playerSelection.substring(1).toLowerCase()
-              : playerSelection;
+playGame();
+
+//Event listener function to determine what to display after each button click
+function displayButtonResult(e) {
+    if (playGame.roundNumber >= 5) {
+        if (!document.querySelector('#game-over')) displayGameOver();
+        return;
+    }
+
+    displayRoundResult(e);
+    if (playGame.roundNumber == 5) displayGameResult();
 }
 
 //Return random computer selection
 function getComputerSelection() {
-    return RPS_CHOICES[Math.floor(Math.random() * 3)];
+    return ['Rock', 'Paper', 'Scissors'][Math.floor(Math.random() * 3)];
 }
 
-//Return results of a round of Rock Paper Scissors with computer
+//Play one round with computer
 function playRound(playerSelection, computerSelection) {
-    const WINS_OVER = {'Rock': 'Paper',
-                      'Paper': 'Scissors',
-                      'Scissors': 'Rock'};
+    const WINS_OVER = {
+        'Rock': 'Paper',
+        'Paper': 'Scissors',
+        'Scissors': 'Rock'
+    };
 
     return playerSelection == computerSelection ? 'Tie'
-         : playerSelection == WINS_OVER[computerSelection] ? 'Win' 
+         : playerSelection == WINS_OVER[computerSelection] ? 'Win'
          : 'Lose';
 }
 
-//Return results of a 5-round game of Rock Paper Scissors with computer
-function playGame() {
-    let scoreboard = [];
+//Display the result of one round
+function displayRoundResult(e) {
+    playGame.roundNumber++;
 
-    for(let i = 0; i < 5; i++) {
-        let playerSelection = getPlayerSelection(),
-            computerSelection = getComputerSelection();
-        //Exit the game if the user cancels the game during player selection
-        if (playerSelection == null) {
-            console.log('You canceled the game.');
-            return;
-        }
+    let playerSelection = e.target.textContent,
+        computerSelection = getComputerSelection(),
+        roundNumber = `Round ${playGame.roundNumber}: `,
+        roundResult = playRound(playerSelection, computerSelection),
+        displayedResult = document.createElement('p');
 
-        let roundResult = playRound(playerSelection, computerSelection),
-            roundNumber = `Round ${i + 1}: `;
+    //If the result was a tie, display the tie and prepare to rematch the round by decrementing the round number
+    if(roundResult == 'Tie') {
+        displayedResult.textContent = roundNumber + 'It\'s a Tie! Rematch...';
+        playGame.roundNumber--;
+    }
+    //Otherwise, display the result and record it to the scoreboard
+    else {
+        let winningSelection = roundResult == 'Win' ? playerSelection : computerSelection,
+            losingSelection = roundResult == 'Win' ? computerSelection : playerSelection;
 
-        //If the result was a tie, log the tie and rematch the round by decrementing the round number
-        if(roundResult == 'Tie') {
-            console.log(roundNumber + 'It\'s a tie! Rematch...');
-            i--;
-        }
-        //Otherwise, log the result and record it to the scoreboard
-        else {
-            let winningSelection = roundResult == 'Win' ? playerSelection : computerSelection,
-                losingSelection = roundResult == 'Win' ? computerSelection : playerSelection;
-
-            console.log(roundNumber + `You ${roundResult}! ${winningSelection} beats ${losingSelection}.`);
-            scoreboard.push(roundResult);
-        }
+        displayedResult.textContent = roundNumber + `You ${roundResult}! ${winningSelection} beats ${losingSelection}.`;
+        playGame.scoreboard.push(roundResult);
     }
 
-    //Log the winner of the entire game
-    console.log(scoreboard.filter(roundResult => roundResult == 'Win').length > 2 ?
-                'Congratulations! You Won!' : 'Sorry, You Lost.');
+    document.querySelector('#results').appendChild(displayedResult);
+}
+
+//Display the result of the entire game
+function displayGameResult() {
+    const gameResult = document.createElement('p');
+    gameResult.textContent = playGame.scoreboard.filter(roundResult => roundResult == 'Win').length > 2 ?
+                             'Congratulations! You Won!' : 'Sorry, You Lost.';
+    document.querySelector('#results').appendChild(gameResult);
+}
+
+//Add a game over message after game is complete
+function displayGameOver() {
+    const gameOver = document.createElement('p');
+    gameOver.setAttribute('id', 'game-over');
+    gameOver.textContent = 'The game has finished.';
+    document.querySelector('#results').appendChild(gameOver);
 }
