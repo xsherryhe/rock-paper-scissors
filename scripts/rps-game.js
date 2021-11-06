@@ -11,12 +11,14 @@ function playGame() {
     document.querySelector('#results').textContent = '';
     document.querySelectorAll('.score').forEach(score => score.textContent = '0');
     playGame.roundNumber = 0;
+    playGame.scoreboard = [0, 0];
+    playGame.gameOver = false;
 }
 playGame();
 
 //Event listener function to display result of button click
 function displayButtonResult(e) {
-    if(playGame.roundNumber >= 5) {
+    if(playGame.gameOver) {
         if (!document.querySelector('#game-over')) displayGameOver();
         return;
     }
@@ -25,7 +27,10 @@ function displayButtonResult(e) {
     let playerSelection = e.target.textContent,
         computerSelection = getComputerSelection();
     displayRoundResult(playerSelection, computerSelection);
-    if(playGame.roundNumber == 5) displayGameResult();
+    if(playGame.scoreboard.find(score => score == 5)) {
+        playGame.gameOver = true;
+        displayGameResult();
+    }
 }
 
 //Return random computer selection
@@ -59,13 +64,13 @@ function displayRoundResult(playerSelection, computerSelection) {
     }
     //Otherwise, display the result and record it to the scoreboard
     else {
-        let [winningSelection, losingSelection, winnerSelector] = 
-            roundResult == 'Win' ? [playerSelection, computerSelection, '.player']
-                                 : [computerSelection, playerSelection, '.computer'];
+        let [winningSelection, losingSelection, winner] = 
+            roundResult == 'Win' ? [playerSelection, computerSelection, 0]
+                                 : [computerSelection, playerSelection, 1];
 
         displayedResult.textContent = roundNumber + `You ${roundResult}! ${winningSelection} beats ${losingSelection}.`;
-        let winningScore = document.querySelector(winnerSelector);
-        winningScore.textContent = Number(winningScore.textContent) + 1;
+        playGame.scoreboard[winner]++;
+        document.querySelectorAll('.score').forEach((score, i) => score.textContent = playGame.scoreboard[i]);
     }
 
     document.querySelector('#results').appendChild(displayedResult);
@@ -73,10 +78,8 @@ function displayRoundResult(playerSelection, computerSelection) {
 
 //Display the result of the entire game
 function displayGameResult() {
-    const playerScore = document.querySelector('.player').textContent,
-          computerScore = document.querySelector('.computer').textContent,
-          gameResult = document.createElement('p');
-    gameResult.textContent = playerScore > computerScore ?
+    const gameResult = document.createElement('p');
+    gameResult.textContent = playGame.scoreboard[0] > playGame.scoreboard[1] ?
                              'Congratulations! You Won!' : 'Sorry, You Lost.';
     document.querySelector('#results').appendChild(gameResult);
 }
