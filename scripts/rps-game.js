@@ -1,7 +1,7 @@
 //Initialize the buttons' functionality
 function initializeButtons() {
-    const rpsButtons = document.querySelectorAll('.player-selection');
-    rpsButtons.forEach(button => button.addEventListener('click', displayButtonResult));
+    document.querySelectorAll('.player-selection')
+            .forEach(button => button.addEventListener('click', displayButtonResult));
     document.querySelector('#reset-game').addEventListener('click', playGame);
 }
 initializeButtons();
@@ -19,14 +19,15 @@ playGame();
 //Event listener function to display result of button click
 function displayButtonResult(e) {
     if(playGame.gameOver) {
-        if (!document.querySelector('#game-over')) displayGameOver();
+        if(!document.querySelector('#game-over')) displayGameOver();
         return;
     }
 
     playGame.roundNumber++;
-    let playerSelection = e.target.textContent,
-        computerSelection = getComputerSelection();
+    const playerSelection = e.target.textContent,
+          computerSelection = getComputerSelection();
     displayRoundResult(playerSelection, computerSelection);
+
     if(playGame.scoreboard.find(score => score == 5)) {
         playGame.gameOver = true;
         displayGameResult();
@@ -53,9 +54,9 @@ function getRoundResult(playerSelection, computerSelection) {
 
 //Display the result of one round
 function displayRoundResult(playerSelection, computerSelection) {
-    let roundNumber = `Round ${playGame.roundNumber}: `,
-        roundResult = getRoundResult(playerSelection, computerSelection),
-        displayedResult = document.createElement('p');
+    const roundNumber = `Round ${playGame.roundNumber}: `,
+          roundResult = getRoundResult(playerSelection, computerSelection),
+          displayedResult = document.createElement('p');
 
     //If the result was a tie, display the tie and prepare to rematch the round by decrementing the round number
     if(roundResult == 'Tie') {
@@ -64,9 +65,9 @@ function displayRoundResult(playerSelection, computerSelection) {
     }
     //Otherwise, display the result and record it to the scoreboard
     else {
-        let [winningSelection, losingSelection, winner] = 
-            roundResult == 'Win' ? [playerSelection, computerSelection, 0]
-                                 : [computerSelection, playerSelection, 1];
+        const [winningSelection, losingSelection, winner] = 
+              roundResult == 'Win' ? [playerSelection, computerSelection, 0]
+                                   : [computerSelection, playerSelection, 1];
 
         displayedResult.textContent = roundNumber + `You ${roundResult}! ${winningSelection} beats ${losingSelection}.`;
         playGame.scoreboard[winner]++;
