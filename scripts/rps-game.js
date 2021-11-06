@@ -63,7 +63,7 @@ function displayRoundResult(playerSelection, computerSelection) {
         displayedResult.textContent = roundNumber + 'It\'s a Tie! Rematch...';
         playGame.roundNumber--;
     }
-    //Otherwise, display the result and record it to the scoreboard
+    //Otherwise, display the result and update the scoreboard
     else {
         const [winningSelection, losingSelection, winner] = 
               roundResult == 'Win' ? [playerSelection, computerSelection, 0]
@@ -88,7 +88,7 @@ function displayGameResult() {
 //Add a game over message after game is complete
 function displayGameOver() {
     const gameOver = document.createElement('p');
-    gameOver.setAttribute('id', 'game-over');
+    gameOver.id = 'game-over';
     gameOver.textContent = 'The game has finished.';
     document.querySelector('#results').appendChild(gameOver);
 }
