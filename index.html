@@ -6,11 +6,17 @@
         <script src="scripts/rps-game.js" defer></script>
     </head>
     <body>
+        <div id="scoreboard">
+            <p>Running Score:</p>
+            <p>Player <span class="player score">0</span></p>
+            <p>Computer <span class="computer score">0</span></p>
+        </div>
         <button class="player-selection">Rock</button>
         <button class="player-selection">Paper</button>
         <button class="player-selection">Scissors</button>
         <button id="reset-game">Reset Game</button>
 
-        <div id="results"></div>
+        <div id="results">
+        </div>
     </body>
 </html>

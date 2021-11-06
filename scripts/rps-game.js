@@ -9,8 +9,8 @@ initializeButtons();
 //Start a new Rock Paper Scissors game
 function playGame() {
     document.querySelector('#results').textContent = '';
+    document.querySelectorAll('.score').forEach(score => score.textContent = '0');
     playGame.roundNumber = 0;
-    playGame.scoreboard = [];
 }
 playGame();
 
@@ -59,11 +59,13 @@ function displayRoundResult(playerSelection, computerSelection) {
     }
     //Otherwise, display the result and record it to the scoreboard
     else {
-        let winningSelection = roundResult == 'Win' ? playerSelection : computerSelection,
-            losingSelection = roundResult == 'Win' ? computerSelection : playerSelection;
+        let [winningSelection, losingSelection, winnerSelector] = 
+            roundResult == 'Win' ? [playerSelection, computerSelection, '.player']
+                                 : [computerSelection, playerSelection, '.computer'];
 
         displayedResult.textContent = roundNumber + `You ${roundResult}! ${winningSelection} beats ${losingSelection}.`;
-        playGame.scoreboard.push(roundResult);
+        let winningScore = document.querySelector(winnerSelector);
+        winningScore.textContent = Number(winningScore.textContent) + 1;
     }
 
     document.querySelector('#results').appendChild(displayedResult);
@@ -71,8 +73,10 @@ function displayRoundResult(playerSelection, computerSelection) {
 
 //Display the result of the entire game
 function displayGameResult() {
-    const gameResult = document.createElement('p');
-    gameResult.textContent = playGame.scoreboard.filter(roundResult => roundResult == 'Win').length > 2 ?
+    const playerScore = document.querySelector('.player').textContent,
+          computerScore = document.querySelector('.computer').textContent,
+          gameResult = document.createElement('p');
+    gameResult.textContent = playerScore > computerScore ?
                              'Congratulations! You Won!' : 'Sorry, You Lost.';
     document.querySelector('#results').appendChild(gameResult);
 }
