@@ -1,22 +1,31 @@
-//Initialize the Rock Paper Scissors game
-function playGame() {
+//Initialize the buttons' functionality
+function initializeButtons() {
     const rpsButtons = document.querySelectorAll('.player-selection');
     rpsButtons.forEach(button => button.addEventListener('click', displayButtonResult));
+    document.querySelector('#reset-game').addEventListener('click', playGame);
+}
+initializeButtons();
+
+//Start a new Rock Paper Scissors game
+function playGame() {
+    document.querySelector('#results').textContent = '';
     playGame.roundNumber = 0;
     playGame.scoreboard = [];
 }
-
 playGame();
 
-//Event listener function to determine what to display after each button click
+//Event listener function to display result of button click
 function displayButtonResult(e) {
-    if (playGame.roundNumber >= 5) {
+    if(playGame.roundNumber >= 5) {
         if (!document.querySelector('#game-over')) displayGameOver();
         return;
     }
 
-    displayRoundResult(e);
-    if (playGame.roundNumber == 5) displayGameResult();
+    playGame.roundNumber++;
+    let playerSelection = e.target.textContent,
+        computerSelection = getComputerSelection();
+    displayRoundResult(playerSelection, computerSelection);
+    if(playGame.roundNumber == 5) displayGameResult();
 }
 
 //Return random computer selection
@@ -24,8 +33,8 @@ function getComputerSelection() {
     return ['Rock', 'Paper', 'Scissors'][Math.floor(Math.random() * 3)];
 }
 
-//Play one round with computer
-function playRound(playerSelection, computerSelection) {
+//Return result of a round
+function getRoundResult(playerSelection, computerSelection) {
     const WINS_OVER = {
         'Rock': 'Paper',
         'Paper': 'Scissors',
@@ -38,13 +47,9 @@ function playRound(playerSelection, computerSelection) {
 }
 
 //Display the result of one round
-function displayRoundResult(e) {
-    playGame.roundNumber++;
-
-    let playerSelection = e.target.textContent,
-        computerSelection = getComputerSelection(),
-        roundNumber = `Round ${playGame.roundNumber}: `,
-        roundResult = playRound(playerSelection, computerSelection),
+function displayRoundResult(playerSelection, computerSelection) {
+    let roundNumber = `Round ${playGame.roundNumber}: `,
+        roundResult = getRoundResult(playerSelection, computerSelection),
         displayedResult = document.createElement('p');
 
     //If the result was a tie, display the tie and prepare to rematch the round by decrementing the round number
